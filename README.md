@@ -20,7 +20,7 @@ var merged = merge.sets(originSet, changedSet1, changedSet2)
 [{id:1, value: '2.1'}, {id:2, value:'3.2'}, {id:3, value:'1.3'}]
 ```
 
-Merging with adds and deletes:
+Merging with created and deleted objects:
 ``` js
 var origin = [{id: 2, value:0 }]
 var set1 = [{id:2, value:0}, {id: 3, value:1}, {id:1, value:2}]
