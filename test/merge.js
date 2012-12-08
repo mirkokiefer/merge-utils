@@ -29,7 +29,7 @@ describe('dictionary merging', function() {
     key1: 1,
     key2: 2
   }
-  var conflictFn = function(key, value1, value2, valueOrigin) {
+  var conflictFn = function(key, valueOrigin, value1, value2) {
     return value1
   }
   it('should merge with no conflicts', function() {
@@ -45,7 +45,7 @@ describe('dictionary merging', function() {
       key1: 2,
       key2: 3
     }
-    var merged = merge.dictionaries(dict1, dict2, originDict, conflictFn)
+    var merged = merge.dictionaries(originDict, dict1, dict2, conflictFn)
     _.each(expected, function(value, key) {
       assert.equal(merged[key], value)
     })
@@ -63,7 +63,7 @@ describe('dictionary merging', function() {
       key1: 2,
       key2: 3
     }
-    var merged = merge.dictionaries(dict1, dict2, originDict, conflictFn)
+    var merged = merge.dictionaries(originDict, dict1, dict2, conflictFn)
     assertDictsEqual(merged, expected)
   })
   it('should merge with conflicts and added/deleted keys', function() {
@@ -79,7 +79,7 @@ describe('dictionary merging', function() {
       key3: 4,
       key5: 5
     }
-    var merged = merge.dictionaries(dict1, dict2, originDict, conflictFn)
+    var merged = merge.dictionaries(originDict, dict1, dict2, conflictFn)
     assertDictsEqual(merged, expected)
   })
 })
@@ -88,18 +88,18 @@ describe('set merging', function() {
   var set1 = [{id:1, value: 'set1.1'}, {id:2, value:'set1.2'}, {id:3, value:'1.3'}]
   var set2 = [{id:1, value: 'set2.1'}, {id:2, value:'set1.2'}, {id:3, value:'1.3'}]
   var set3 = [{id:1, value: 'set3.1'}, {id:2, value:'set3.2'}, {id:3, value:'1.3'}]
-  var conflictFn = function(id, value1, value2, originValue) {
+  var conflictFn = function(id, originValue, value1, value2) {
     return value1;
   }
   it('should resolve a conflict', function() {
     var expected = [{id:1, value: 'set2.1'}, {id:2, value:'set3.2'}, {id:3, value:'1.3'}] 
-    var merged = merge.sets(set2, set3, set1, conflictFn)
+    var merged = merge.sets(set1, set2, set3, conflictFn)
     assertArraysEqual(merged, expected)
   })
   var set4 = []
   it('should merge an empty array', function() {
     var expected = []
-    var merged = merge.sets(set4, set2, set1, conflictFn)
+    var merged = merge.sets(set1, set4, set2, conflictFn)
     assert.equal(merged.length, 0)
   })
   it('should not have to merge anything', function() {
@@ -115,7 +115,7 @@ describe('set merging', function() {
     var set1 = [ { id: 2, value: 0 }, { id: 3, value: 1 }, { id: 1, value: 2 } ]
     var set2 = [ { id: 1, value: 0 }, { id: 2, value: 1 }, { id: 3, value: 2 } ]
     var expected = [ { id: 1, value: 2 }, { id: 2, value: 1 }, { id: 3, value: 1 } ]
-    var merged = merge.sets(set1, set2, origin, conflictFn)
+    var merged = merge.sets(origin, set1, set2, conflictFn)
     assertArraysEqual(merged, expected)
   })
   it('should work with added and deleted IDs', function() {
@@ -123,24 +123,24 @@ describe('set merging', function() {
     var set1 = [ { id: 2, value: 0 }, { id: 3, value: 1 }, { id: 1, value: 2 } ]
     var set2 = [ { id: 3, value: 2 } ]
     var expected = [ { id: 1, value: 2 }, { id: 3, value: 1 } ]
-    var merged = merge.sets(set1, set2, origin, conflictFn)
+    var merged = merge.sets(origin, set1, set2, conflictFn)
     assertArraysEqual(merged, expected)
   })
 })
 
 describe('list merging', function() {
   var originList = [{id:1, value: '1.1'}, {id:2, value:'1.2'}, {id:3, value:'1.3'}]
-  var valueConflictFn = function(id, value1, value2, originValue) {
+  var valueConflictFn = function(id, originValue, value1, value2) {
     return value1;
   }
-  var posConflictFn = function(id, pos1, pos2, originPos) {
+  var posConflictFn = function(id, originPos, pos1, pos2) {
     return pos1;
   }
   it('should do a merge with value conflicts but no order conflicts', function() {
     var list1 = [{id:1, value:'2.1'}, {id:2, value:'1.2'}, {id:3, value:'1.3'}]
     var list2 = [{id:1, value:'3.1'}, {id:2, value:'3.2'}, {id:3, value:'1.3'}]
     var expected = [{id:1, value:'2.1'}, {id:2, value:'3.2'}, {id:3, value:'1.3'}]
-    var merged = merge.orderedSets(list1, list2, originList, valueConflictFn, posConflictFn)
+    var merged = merge.orderedSets(originList, list1, list2, valueConflictFn, posConflictFn)
     expected.forEach(function(each, i) {
       assert.equal(merged[i].value, each.value) 
     })
@@ -149,7 +149,7 @@ describe('list merging', function() {
     var list1 = [{id:2, value:'1.2'}, {id:1, value: '1.1'}, {id:3, value:'1.3'}]
     var list2 = [{id:2, value:'1.2'}, {id:3, value:'1.3'}, {id:1, value: '1.1'}]
     var expected = [{id:2, value:'1.2'}, {id:1, value: '1.1'}, {id:3, value:'1.3'}]
-    var merged = merge.orderedSets(list1, list2, originList, valueConflictFn, posConflictFn)
+    var merged = merge.orderedSets(originList, list1, list2, valueConflictFn, posConflictFn)
     expected.forEach(function(each, i) {
       assert.equal(merged[i].value, each.value) 
     })
