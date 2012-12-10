@@ -1,6 +1,7 @@
 #merge-utils
-Allows you to merge sets of identifyable objects:
+*Note: [id-merge](https://github.com/mirkok/id-merge) is a far more sophisticated 3-way merging library and has kind of deprecated this one.*
 
+Allows you to merge sets of identifyable objects:
 
 Simple merging:
 ``` js
